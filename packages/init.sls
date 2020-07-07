@@ -23,5 +23,4 @@ cheese:
 
 lua:
   pkg.installed:
-    - pkgs:
-      - lua
+    - version: ‘5.3*’
