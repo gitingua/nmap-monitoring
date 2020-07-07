@@ -3,10 +3,10 @@ mkdir_nmap:
     - cwd: /usr/local/share/
     - name: mkdir nmap-mon
 
-base_nmap:
+base_first:
   cmd.run:
     - cwd: /usr/local/share/nmap-mon/
-    - name: nmap -oX base.xml -sV -PN ip add
+    - name: nmap -oX base-first.xml -sV -PN ip-address-first
 
 /usr/share/nmap/scan-one.sh:
   file:
@@ -24,6 +24,11 @@ base_nmap:
     - minute: '0'
     - daymonth: '1-31/2'
 
+base_second:
+  cmd.run:
+    - cwd: /usr/local/share/nmap-mon/
+    - name: nmap -oX base-second.xml -sV -PN ip-address-second
+ 
 /usr/share/nmap/scan-two.sh:
   file:
     - managed
