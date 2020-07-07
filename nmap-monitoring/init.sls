@@ -13,7 +13,7 @@ base_nmap:
     - managed
     - template: jinja
     - name: /usr/local/share/nmap-mon/scan-one.sh
-    - source: salt://nmap/inst/scan-one.jinja
+    - source: salt://nmap-monitoring/nmap-monitoring/scan-one.jinja
     - user: root
     - group: root
     - mode: 755
@@ -29,7 +29,7 @@ base_nmap:
     - managed
     - template: jinja
     - name: /usr/local/share/nmap-mon/scan-two.sh
-    - source: salt://nmap/inst/scan-two.jinja
+    - source: salt://nmap-monitoring/nmap-monitoring/scan-two.jinja
     - user: root
     - group: root
     - mode: 755
