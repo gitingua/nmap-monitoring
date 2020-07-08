@@ -1,0 +1,37 @@
+#!/bin/bash 
+#Bash script to email admin when changes are detected in a network using Nmap and Ndiff. 
+# 
+#Don't forget to adjust the CONFIGURATION variables. 
+#Paulino Calderon <calderon@websec.mx> 
+
+# 
+#CONFIGURATION 
+# 
+NETWORK="ip-address-second"
+ADMIN=address@mail.ru
+PORT="-p 21,22,25,53,389,587,465,993,1433,1957,8000,8080,8082,3389,80,443,445,8444,111,6379,9000,9100,139,5900,10250"
+SCRIPTS="--script=amqp-info,banner,cassandra-info,couchdb-stats,dns-recursion,dns-service-discovery,docker-version,ftp-anon,ftp-syst,ftp-vuln-cve2010-4221,gopher-ls,hadoop-datanode-info,hadoop-jobtracker-info,hadoop-namenode-info,hadoop-secondary-namenode-info,hadoop-tasktracker-info,hbase-master-info,hbase-region-info,http-auth-finder,http-config-backup,http-frontpage-login,http-git,http-hp-ilo-info,http-ls,http-methods,http-open-proxy,http-passwd,http-server-header,http-svn-info,ip-forwarding,ipmi-version,knx-gateway-info,ldap-search,membase-http-info,memcached-info,mongodb-info,msrpc-enum,ms-sql-info,mysql-info,mysql-vuln-cve2012-2122,nbstat,ndmp-fs-info,ndmp-version,nfs-ls,nrpe-enum,pop3-ntlm-info,pptp-version,rdp-ntlm-info,rdp-vuln-ms12-020,redis-info,rpcinfo,rsync-list-modules,smb-enum-shares,smb-ls,smb-vuln-cve-2017-7494,smb-vuln-ms10-061,smb-vuln-ms17-010,snmp-info,socks-open-proxy,ssh-auth-methods,telnet-ntlm-info,vnc-info,realvnc-auth-bypass,vnc-title"
+NMAP_FLAGS="-sV -Pn -sT $PORT $SCRIPTS -T4 --open"
+BASE_PATH=/usr/local/share/nmap-mon/
+BIN_PATH=/usr/bin/
+BASE_FILE=base-second.xml 
+NDIFF_FILE=ndiff-second.log 
+NEW_RESULTS_FILE=newscanresults-second.xml 
+
+BASE_RESULTS="$BASE_PATH$BASE_FILE" 
+NEW_RESULTS="$BASE_PATH$NEW_RESULTS_FILE" 
+NDIFF_RESULTS="$BASE_PATH$NDIFF_FILE" 
+
+if [ -f $BASE_RESULTS ] 
+then 
+  echo "Checking host $NETWORK" 
+  ${BIN_PATH}nmap -oX $NEW_RESULTS $NMAP_FLAGS $NETWORK 
+  ${BIN_PATH}ndiff $BASE_RESULTS $NEW_RESULTS > $NDIFF_RESULTS 
+  if [ $(cat $NDIFF_RESULTS | wc -l) -gt 0 ] 
+  then 
+    echo "Network changes detected in $NETWORK" 
+    cat $NDIFF_RESULTS 
+    echo "Alerting admin $ADMIN" 
+    mail -s "Network changes detected in $NETWORK" $ADMIN < $NDIFF_RESULTS 
+  fi 
+fi
